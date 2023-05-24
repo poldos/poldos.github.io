@@ -4,6 +4,7 @@ let canvasColorPicker;
 let woodColorPicker;
 let leafColorPicker;
 let rSeed;
+let newTreeButton;
 let menu = document.getElementById('m1');
 let menuPosAndDim = menu.getBoundingClientRect();
 
@@ -20,9 +21,18 @@ function setup() {
   leafColorPicker.position(menuPosAndDim.x + 450, height + 75);
   // set seed to use until next window reload
   rSeed = random(1, 100);
-
+  // create button for page reload / new tree
+  newTreeButton = createButton('new Tree');
+  newTreeButton.style('font-color: blue;');
+  newTreeButton.position(menuPosAndDim.x + 650, height + 75);
+  newTreeButton.size(50,25);
+  newTreeButton.mousePressed(reloadPage);
   angleMode(DEGREES);
   noLoop();
+}
+
+function reloadPage() {
+  location.reload();
 }
 
 function updateColors() {
