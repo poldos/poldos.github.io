@@ -13,11 +13,11 @@ function setup() {
   background(255);
   // create colour pickers (from cache or default if nothing in cache)
   canvasColorPicker = createColorPicker(localStorage['canvas'] || '#888888');
-  canvasColorPicker.position(menuPosAndDim.x+ 50, height - 50);
+  canvasColorPicker.position(menuPosAndDim.x+ 50, height + 75);
   woodColorPicker = createColorPicker(localStorage['wood'] || '#462814');
-  woodColorPicker.position(menuPosAndDim.x + 250, height-50);
+  woodColorPicker.position(menuPosAndDim.x + 250, height + 75);
   leafColorPicker = createColorPicker(localStorage['leaf'] || '#4C06A9');
-  leafColorPicker.position(menuPosAndDim.x + 450, height-50);
+  leafColorPicker.position(menuPosAndDim.x + 450, height + 75);
   // set seed to use until next window reload
   rSeed = random(1, 100);
 
@@ -40,17 +40,17 @@ function draw() {
   rect(menuPosAndDim.x, menuPosAndDim.y, menuPosAndDim.width, height);
   fill(0);
   textStyle(BOLD);
-  text("Background", menuPosAndDim.x + 50, height - 165);
+  text("Background", menuPosAndDim.x + 50, height - 40);
   canvasColorPicker.input(updateColors);
-  text("Wood", menuPosAndDim.x + 250, height - 165);
+  text("Wood", menuPosAndDim.x + 250, height - 40);
   woodColorPicker.input(updateColors);
-  text("Leaves", menuPosAndDim.x + 450, height - 165);
+  text("Leaves", menuPosAndDim.x + 450, height - 40);
   leafColorPicker.input(updateColors);
 
   // start drawing
   randomSeed(rSeed); // same random seed for each redraw
-  translate(width/2, height/2 + 100);
-  branch(70);
+  translate(width/2, height/2 + 250);
+  branch(100);
 }
 
 // setBackgroundColor()
