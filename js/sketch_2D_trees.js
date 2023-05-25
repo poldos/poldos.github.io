@@ -1,40 +1,56 @@
 // Global variables
-let canvasPosition;
+let canvasFrame;
+let canvasWidth = 1000;
+let canvasHeight = 1000;
+let canvasX;
+let canvasY;
+
 let canvasColorPicker;
 let woodColorPicker;
 let leafColorPicker;
-let rSeed;
-let newTreeButton;
-let menu = document.getElementById('m1');
-let menuPosAndDim = menu.getBoundingClientRect();
 
+let rSeed;
+
+let newTreeButton;
+
+// setup Sketch UI
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  canvasFrame = createCanvas(canvasWidth, canvasHeight);
+  canvasX = (windowWidth - canvasWidth) / 2;
+  canvasY = (windowHeight - canvasHeight) / 2;
+  canvasFrame.position(canvasX, canvasY);
   // set white background
   background(255);
   // create colour pickers (from cache or default if nothing in cache)
-  canvasColorPicker = createColorPicker(localStorage['canvas'] || '#888888');
-  canvasColorPicker.position(menuPosAndDim.x+ 50, height + 75);
-  woodColorPicker = createColorPicker(localStorage['wood'] || '#462814');
-  woodColorPicker.position(menuPosAndDim.x + 250, height + 75);
-  leafColorPicker = createColorPicker(localStorage['leaf'] || '#4C06A9');
-  leafColorPicker.position(menuPosAndDim.x + 450, height + 75);
-  // set seed to use until next window reload
-  rSeed = random(1, 100);
+  canvasColorPicker = createColorPicker(localStorage['canvas'] || '#FFFFFF');
+  canvasColorPicker.position(canvasX + 50, canvasHeight + 75);
+  woodColorPicker = createColorPicker(localStorage['wood'] || '#000000');
+  woodColorPicker.position(canvasX + 250, canvasHeight + 75);
+  leafColorPicker = createColorPicker(localStorage['leaf'] || '#888888');
+  leafColorPicker.position(canvasX + 450, canvasHeight + 75);
+
   // create button for page reload / new tree
   newTreeButton = createButton('new Tree');
   newTreeButton.style('font-color: blue;');
-  newTreeButton.position(menuPosAndDim.x + 650, height + 75);
+  newTreeButton.position(canvasX + 650, canvasHeight + 75);
   newTreeButton.size(50,25);
   newTreeButton.mousePressed(reloadPage);
   angleMode(DEGREES);
   noLoop();
+  initSeed();
 }
 
+// initialise seed to use until next window reload
+function initSeed() {
+  rSeed = random(1, 100);
+}
+
+// reload page on user request
 function reloadPage() {
   location.reload();
 }
 
+// update colours on user request
 function updateColors() {
   localStorage['canvas'] = canvasColorPicker.value();
   localStorage['wood'] = woodColorPicker.value(); 
@@ -45,21 +61,22 @@ function updateColors() {
 function draw() {
   // set background, add colour pickers to page and update colours per user input
   //translate(width/2, height/2);
+  background(canvasColorPicker.value());
   noStroke();
-  fill(canvasColorPicker.value());
-  rect(menuPosAndDim.x, menuPosAndDim.y, menuPosAndDim.width, height);
   fill(0);
+  
   textStyle(BOLD);
-  text("Background", menuPosAndDim.x + 50, height - 40);
+  text("Background", 50, canvasHeight - 40);
   canvasColorPicker.input(updateColors);
-  text("Wood", menuPosAndDim.x + 250, height - 40);
+  text("Wood", 250, canvasHeight - 40);
   woodColorPicker.input(updateColors);
-  text("Leaves", menuPosAndDim.x + 450, height - 40);
+  text("Leaves", 450, canvasHeight - 40);
   leafColorPicker.input(updateColors);
+  text("new Tree", 650, canvasHeight - 40);
 
   // start drawing
   randomSeed(rSeed); // same random seed for each redraw
-  translate(width/2, height/2 + 250);
+  translate(canvasWidth/2, canvasHeight/2 + 250);
   branch(100);
 }
 
