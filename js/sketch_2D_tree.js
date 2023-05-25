@@ -6,9 +6,13 @@ let canvasX;
 let canvasY;
 let menuDropdown;
 
-let canvasColorPicker;
+let backgroundText;
+let woodText;
+let leafText;
+let backgroundColorPicker;
 let woodColorPicker;
 let leafColorPicker;
+let buttonText;
 
 let rSeed;
 
@@ -17,14 +21,13 @@ let newTreeButton;
 // setup Sketch UI
 function setup() {
   canvasWidth = min(windowWidth, 750);
-  canvasHeight = min(windowHeight, 1000);
+  canvasHeight = min(windowHeight-100, 1000);
 
   canvasFrame = createCanvas(canvasWidth, canvasHeight);
 
-  canvasX = (windowWidth - canvasWidth) / 2;
-  canvasY = (windowHeight - canvasHeight + 125) / 2;
+  canvasX = (windowWidth - canvasWidth + 30) / 2;
+  canvasY = (windowHeight - canvasHeight + 25) / 2;
   canvasFrame.position(canvasX, canvasY);
-  console.log(canvasX, canvasY);
 
   // set white background
   background(255);
@@ -33,19 +36,34 @@ function setup() {
   menuDropdown = document.getElementById("m1").getBoundingClientRect();
 
   // create colour pickers (from cache or default if nothing in cache)
-  canvasColorPicker = createColorPicker(localStorage['canvas'] || '#FFFFFF');
-  canvasColorPicker.position(menuDropdown.x, canvasY);
+  backgroundColorPicker = createColorPicker(localStorage['background'] || '#FFFFFF');
+  backgroundColorPicker.position(menuDropdown.x, canvasY + 40);
+  backgroundText = createP('Background');
+  backgroundText.style('font-size', '12px');
+  backgroundText.position(menuDropdown.x + 53, canvasY + 47);
+
   woodColorPicker = createColorPicker(localStorage['wood'] || '#000000');
-  woodColorPicker.position(menuDropdown.x, canvasY + 40);
+  woodColorPicker.position(menuDropdown.x, canvasY + 80);
+  woodText = createP('Wood');
+  woodText.style('font-size', '12px');
+  woodText.position(menuDropdown.x + 53, canvasY + 87);
+
   leafColorPicker = createColorPicker(localStorage['leaf'] || '#888888');
-  leafColorPicker.position(menuDropdown.x, canvasY + 80);
+  leafColorPicker.position(menuDropdown.x, canvasY + 120);
+  leafText = createP('Leaf');
+  leafText.style('font-size', '12px');
+  leafText.position(menuDropdown.x + 53, canvasY + 125);
 
   // create button for page reload / new tree
   newTreeButton = createButton('new Tree');
-  newTreeButton.style('font-color: blue;');
-  newTreeButton.position(menuDropdown.x, canvasY + 120);
-  newTreeButton.size(50,25);
+  //newTreeButton.style('font-size', '12px');
+  newTreeButton.position(menuDropdown.x, canvasY);
+  newTreeButton.size(50,23);
   newTreeButton.mousePressed(reloadPage);
+  buttonText = createP('new Tree');
+  buttonText.style('font-size', '12px');
+  buttonText.position(menuDropdown.x + 53, canvasY + 7);
+
   angleMode(DEGREES);
   noLoop();
   initSeed();
@@ -63,7 +81,7 @@ function reloadPage() {
 
 // update colours on user request
 function updateColors() {
-  localStorage['canvas'] = canvasColorPicker.value();
+  localStorage['background'] = backgroundColorPicker.value();
   localStorage['wood'] = woodColorPicker.value(); 
   localStorage['leaf'] = leafColorPicker.value();
   redraw();
@@ -72,13 +90,13 @@ function updateColors() {
 function draw() {
   // set background, add colour pickers to page and update colours per user input
   //translate(width/2, height/2);
-  background(canvasColorPicker.value());
+  background(backgroundColorPicker.value());
   noStroke();
   fill(0);
   
   //textStyle(BOLD);
   //text("Background", menuDropdown.x, menuDropdown.y + menuDropdown.height + 10);
-  canvasColorPicker.input(updateColors);
+  backgroundColorPicker.input(updateColors);
   //text("Wood", 250, menuDropdown.y + menuDropdown.height + 10);
   woodColorPicker.input(updateColors);
   //text("Leaves", 450, menuDropdown.y + menuDropdown.height + 10);
