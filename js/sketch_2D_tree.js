@@ -85,7 +85,7 @@ function setup() {
   leafColorPickerText.position(menu.x + 53, canvasY + 125);
 
   // create slider for leaf transparency
-  leafAlphaSlider = createSlider(0, 255, Number(localStorage['leafAlpha']) || 255, 0);
+  leafAlphaSlider = createSlider(0, 255, Number(localStorage['leafAlpha']) || 200, 0);
   leafAlphaSlider.position(menu.x, canvasY + 165);
   leafAlphaSlider.style('width', '50px');
   leafAlphaSliderText = createP('Leaf opacity');
@@ -94,7 +94,7 @@ function setup() {
   leafAlphaSliderText.position(menu.x + 53, canvasY + 162);
 
   // create slider for branch length
-  branchLengthSlider = createSlider(20, 95, Number(localStorage['branchLength']) || 75, 0);
+  branchLengthSlider = createSlider(20, 95, Number(localStorage['branchLength']) || 95, 0);
   branchLengthSlider.position(menu.x, canvasY + 205);
   branchLengthSlider.style('width', '50px');
   branchLengthSliderText = createP('Branch length');
@@ -178,8 +178,8 @@ function resetParam() {
   backgroundColorPicker.value('#FFFFFF');
   woodColorPicker.value('#000000');
   leafColorPicker.value('#888888');
-  leafAlphaSlider.value(255);
-  branchLengthSlider.value(75);
+  leafAlphaSlider.value(200);
+  branchLengthSlider.value(95);
   branchAngleSlider.value(22.5);
   localStorage['background'] = backgroundColorPicker.value();
   localStorage['wood'] = woodColorPicker.value(); 
