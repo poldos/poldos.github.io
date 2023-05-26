@@ -1,5 +1,4 @@
 // Global variables
-
 let canvasFrame;
 let canvasWidth;
 let canvasHeight;
@@ -229,7 +228,7 @@ function draw() {
 function branch(len) {
   push()
 
-// Generate trunc and branches
+  // Generate trunc and branches
   if(len > 10) {
     // branches
     strokeWeight(map(len, 10, 90, 1, 15));
@@ -258,7 +257,6 @@ function branch(len) {
       vertex(x, y);
     }
     endShape();
-    
     //right half
     beginShape();
     for (let i = 135; i > 40; i--) {
