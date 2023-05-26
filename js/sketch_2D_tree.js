@@ -19,14 +19,17 @@ let woodColorPickerText;
 let leafColorPicker;
 let leafColorPickerText;
 
-let resetParamButton;
-let resetParamButtonText;
+let leafAlphaSlider;
+let leafAlphaSliderText;
 
 let branchLengthSlider;
 let branchLengthSliderText;
 
 let branchAngleSlider;
 let branchAngleSliderText;
+
+let resetParamButton;
+let resetParamButtonText;
 
 let saveImageButton;
 let saveImageButtonText;
@@ -82,45 +85,54 @@ function setup() {
   leafColorPickerText.style('font-family', 'Andika');
   leafColorPickerText.position(menu.x + 53, canvasY + 125);
 
+  // create slider for leaf transparency
+  leafAlphaSlider = createSlider(0, 255, Number(localStorage['leafAlpha']) || 255, 0);
+  leafAlphaSlider.position(menu.x, canvasY + 165);
+  leafAlphaSlider.style('width', '50px');
+  leafAlphaSliderText = createP('Leaf opacity');
+  leafAlphaSliderText.style('font-size', '12px');
+  leafAlphaSliderText.style('font-family', 'Andika');
+  leafAlphaSliderText.position(menu.x + 53, canvasY + 162);
+
   // create slider for branch length
   branchLengthSlider = createSlider(20, 95, Number(localStorage['branchLength']) || 75, 0);
-  branchLengthSlider.position(menu.x, canvasY + 165);
+  branchLengthSlider.position(menu.x, canvasY + 205);
   branchLengthSlider.style('width', '50px');
   branchLengthSliderText = createP('Branch length');
   branchLengthSliderText.style('font-size', '12px');
   branchLengthSliderText.style('font-family', 'Andika');
-  branchLengthSliderText.position(menu.x + 53, canvasY + 162);
+  branchLengthSliderText.position(menu.x + 53, canvasY + 202);
 
   // create slider for branch angle
   branchAngleSlider = createSlider(0, 45, Number(localStorage['branchAngle']) || 22.5, 0);
-  branchAngleSlider.position(menu.x, canvasY + 205);
+  branchAngleSlider.position(menu.x, canvasY + 245);
   branchAngleSlider.style('width', '50px');
   branchAngleSliderText = createP('Branch angle');
   branchAngleSliderText.style('font-size', '12px');
   branchAngleSliderText.style('font-family', 'Andika');
-  branchAngleSliderText.position(menu.x + 53, canvasY + 202);
+  branchAngleSliderText.position(menu.x + 53, canvasY + 242);
 
   // create button to reset parameters de default (without generating a new tree)
   resetParamButton = createButton('Reset parameters');
-  resetParamButton.position(menu.x, canvasY + 245);
+  resetParamButton.position(menu.x, canvasY + 285);
   resetParamButton.size(50,23);
   resetParamButton.mousePressed(resetParam);
   resetParamButtonText = createP('Reset <br> parameters');
   resetParamButtonText.style('font-size', '12px');
   resetParamButtonText.style('font-family', 'Andika');
   resetParamButtonText.style('line-height', 1);
-  resetParamButtonText.position(menu.x + 53, canvasY + 242);
+  resetParamButtonText.position(menu.x + 53, canvasY + 283);
 
   // create button to save image to file
   saveImageButton = createButton('Save image');
-  saveImageButton.position(menu.x, canvasY + 295);
+  saveImageButton.position(menu.x, canvasY + 325);
   saveImageButton.size(50,23);
   saveImageButton.mousePressed(saveImage);
   saveImageButtonText = createP('Save image');
   saveImageButtonText.style('font-size', '12px');
   saveImageButtonText.style('font-family', 'Andika');
   saveImageButtonText.style('line-height', 1);
-  saveImageButtonText.position(menu.x + 53, canvasY + 300);
+  saveImageButtonText.position(menu.x + 53, canvasY + 329);
 
   angleMode(DEGREES);
   noLoop();
@@ -145,6 +157,12 @@ function updateColors() {
   redraw();
 }
 
+// update leaf alpha on user request and store it in the cache
+function updateLeafAlpha() {
+  localStorage['leafAlpha'] = leafAlphaSlider.value();
+  redraw();
+}
+
 // update branch length on user request and store it in the cache
 function updateBranchLength() {
   localStorage['branchLength'] = branchLengthSlider.value();
@@ -161,11 +179,13 @@ function resetParam() {
   backgroundColorPicker.value('#FFFFFF');
   woodColorPicker.value('#000000');
   leafColorPicker.value('#888888');
+  leafAlphaSlider.value(255);
   branchLengthSlider.value(75);
   branchAngleSlider.value(22.5);
   localStorage['background'] = backgroundColorPicker.value();
   localStorage['wood'] = woodColorPicker.value(); 
   localStorage['leaf'] = leafColorPicker.value();
+  localStorage['leafAlpha'] = leafAlphaSlider.value();
   localStorage['branchLength'] = branchLengthSlider.value();
   localStorage['branchAngle'] = branchAngleSlider.value();
   redraw();
@@ -174,6 +194,14 @@ function resetParam() {
 // save canvas to file on user request
 function saveImage() {
   saveCanvas('myTree', 'png');
+}
+
+// convert hex colour to rgb to add transparency to the leaves
+function hexToRgb(hex) {
+  let r = parseInt(hex.slice(1, 3), 16);
+  let g = parseInt(hex.slice(3, 5), 16);
+  let b = parseInt(hex.slice(5, 7), 16);
+  return ([r, g, b]);
 }
 
 // capture user input parameters and draw sketch
@@ -186,6 +214,7 @@ function draw() {
   backgroundColorPicker.input(updateColors);
   woodColorPicker.input(updateColors);
   leafColorPicker.input(updateColors);
+  leafAlphaSlider.input(updateLeafAlpha);
   branchLengthSlider.input(updateBranchLength);
   branchAngleSlider.input(updateBranchAngle);
 
@@ -212,12 +241,11 @@ function branch(len) {
     rotate(random(2* branchAngleSlider.value() - 5, 2 * branchAngleSlider.value() + 5));
     branch(random(0.7, 0.9)*len);
   } else {
-    // leaves
-    let r = 88 + random(-20, 20);
-    let g = 2 + random(-20, 20);
-    let b = 170 + random(-20, 20);
+    // leaves (leafColorPicker converted from hex to rgb and leafAlphaSlider used to set alpha )
 
-    fill(leafColorPicker.value());
+    let colorArray = hexToRgb(leafColorPicker.value());
+    colorArray.push(leafAlphaSlider.value());
+    fill(colorArray);
     noStroke();
 
     // generate leaves
