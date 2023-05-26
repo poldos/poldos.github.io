@@ -4,7 +4,7 @@ let canvasWidth;
 let canvasHeight;
 let canvasX;
 let canvasY;
-let menuDropdown;
+let menu;
 
 let backgroundText;
 let woodText;
@@ -26,12 +26,13 @@ let resetParamButton;
 function setup() {
 
   // to align legend and canvas to horizontal menu, get its coordinates
-  menuDropdown = document.getElementById("m1").getBoundingClientRect();
+  menu = document.getElementById("m1").getBoundingClientRect();
   
-  canvasWidth = menuDropdown.width - 140;
-  canvasHeight = min(windowHeight-50, 1000);
-  canvasX = menuDropdown.x + 140;
-  canvasY = (windowHeight - canvasHeight + 25) / 2;
+  // create canvas
+  canvasX = menu.x + 140;
+  canvasY = menu.y + menu.height + 10;
+  canvasWidth = menu.width - 140;
+  canvasHeight = windowHeight - canvasY - 10;
   canvasFrame = createCanvas(canvasWidth, canvasHeight);
   canvasFrame.position(canvasX, canvasY);
 
@@ -40,48 +41,48 @@ function setup() {
 
   // create button for page reload / new tree
   newTreeButton = createButton('New tree');
-  newTreeButton.position(menuDropdown.x, canvasY);
+  newTreeButton.position(menu.x, canvasY);
   newTreeButton.size(50,23);
   newTreeButton.mousePressed(reloadPage);
   newTreeButtonText = createP('New tree');
   newTreeButtonText.style('font-size', '12px');
-  newTreeButtonText.position(menuDropdown.x + 53, canvasY + 7);
+  newTreeButtonText.position(menu.x + 53, canvasY + 7);
 
   // create colour pickers (from cache or default if nothing in cache)
   backgroundColorPicker = createColorPicker(localStorage['background'] || '#FFFFFF');
-  backgroundColorPicker.position(menuDropdown.x, canvasY + 40);
+  backgroundColorPicker.position(menu.x, canvasY + 40);
   backgroundText = createP('Background');
   backgroundText.style('font-size', '12px');
-  backgroundText.position(menuDropdown.x + 53, canvasY + 47);
+  backgroundText.position(menu.x + 53, canvasY + 47);
 
   woodColorPicker = createColorPicker(localStorage['wood'] || '#000000');
-  woodColorPicker.position(menuDropdown.x, canvasY + 80);
+  woodColorPicker.position(menu.x, canvasY + 80);
   woodText = createP('Wood');
   woodText.style('font-size', '12px');
-  woodText.position(menuDropdown.x + 53, canvasY + 87);
+  woodText.position(menu.x + 53, canvasY + 87);
 
   leafColorPicker = createColorPicker(localStorage['leaf'] || '#888888');
-  leafColorPicker.position(menuDropdown.x, canvasY + 120);
+  leafColorPicker.position(menu.x, canvasY + 120);
   leafText = createP('Leaf');
   leafText.style('font-size', '12px');
-  leafText.position(menuDropdown.x + 53, canvasY + 125);
+  leafText.position(menu.x + 53, canvasY + 125);
 
   // create slider for branch right angle
-  branchAngleSlider = createSlider(5, 35, Number(localStorage['branchAngle']) || 20, 0);
-  branchAngleSlider.position(menuDropdown.x, canvasY + 165);
+  branchAngleSlider = createSlider(0, 45, Number(localStorage['branchAngle']) || 22.5, 0);
+  branchAngleSlider.position(menu.x, canvasY + 165);
   branchAngleSlider.style('width', '50px');
   branchAngleText = createP('Branch angle');
   branchAngleText.style('font-size', '12px');
-  branchAngleText.position(menuDropdown.x + 53, canvasY + 165);
+  branchAngleText.position(menu.x + 53, canvasY + 165);
 
   // create button to reset parameters de default (without generating a new tree)
   resetParamButton = createButton('Reset parameters');
-  resetParamButton.position(menuDropdown.x, canvasY + 205);
+  resetParamButton.position(menu.x, canvasY + 205);
   resetParamButton.size(50,23);
   resetParamButton.mousePressed(resetParam);
   resetParamButtonText = createP('Reset <br> parameters');
   resetParamButtonText.style('font-size', '12px');
-  resetParamButtonText.position(menuDropdown.x + 53, canvasY + 202);
+  resetParamButtonText.position(menu.x + 53, canvasY + 202);
 
   angleMode(DEGREES);
   noLoop();
@@ -103,7 +104,7 @@ function resetParam() {
   backgroundColorPicker.value('#FFFFFF');
   woodColorPicker.value('#000000');
   leafColorPicker.value('#888888');
-  branchAngleSlider.value(20);
+  branchAngleSlider.value(22.5);
   localStorage['background'] = backgroundColorPicker.value();
   localStorage['wood'] = woodColorPicker.value(); 
   localStorage['leaf'] = leafColorPicker.value();
