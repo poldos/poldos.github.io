@@ -24,20 +24,19 @@ let resetParamButton;
 
 // setup Sketch UI
 function setup() {
-  canvasWidth = min(windowWidth, 750);
+
+  // to align legend and canvas to horizontal menu, get its coordinates
+  menuDropdown = document.getElementById("m1").getBoundingClientRect();
+  
+  canvasWidth = menuDropdown.width - 140;
   canvasHeight = min(windowHeight-50, 1000);
-
-  canvasFrame = createCanvas(canvasWidth, canvasHeight);
-
-  canvasX = (windowWidth - canvasWidth + 45) / 2;
+  canvasX = menuDropdown.x + 140;
   canvasY = (windowHeight - canvasHeight + 25) / 2;
+  canvasFrame = createCanvas(canvasWidth, canvasHeight);
   canvasFrame.position(canvasX, canvasY);
 
   // set white background
   background(255);
-
-  // to align to menu dropdown, get its coordinates
-  menuDropdown = document.getElementById("m1").getBoundingClientRect();
 
   // create button for page reload / new tree
   newTreeButton = createButton('New tree');
