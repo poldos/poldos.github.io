@@ -7,22 +7,31 @@ let canvasX;
 let canvasY;
 let menu;
 
-let backgroundText;
-let woodText;
-let leafText;
-
+let newTreeButton;
 let newTreeButtonText;
+
 let backgroundColorPicker;
+let backgroundColorPickerText;
+
 let woodColorPicker;
+let woodColorPickerText;
+
 let leafColorPicker;
-let branchLengthSlider;
-let branchAngleSlider;
+let leafColorPickerText;
+
+let resetParamButton;
 let resetParamButtonText;
 
-let rSeed;
+let branchLengthSlider;
+let branchLengthSliderText;
 
-let newTreeButton;
-let resetParamButton;
+let branchAngleSlider;
+let branchAngleSliderText;
+
+let saveImageButton;
+let saveImageButtonText;
+
+let rSeed;
 
 // setup Sketch & UI
 function setup() {
@@ -54,42 +63,42 @@ function setup() {
   // create colour pickers (from cache or default if nothing in cache)
   backgroundColorPicker = createColorPicker(localStorage['background'] || '#FFFFFF');
   backgroundColorPicker.position(menu.x, canvasY + 40);
-  backgroundText = createP('Background');
-  backgroundText.style('font-size', '12px');
-  backgroundText.style('font-family', 'Andika');
-  backgroundText.position(menu.x + 53, canvasY + 43);
+  backgroundColorPickerText = createP('Background');
+  backgroundColorPickerText.style('font-size', '12px');
+  backgroundColorPickerText.style('font-family', 'Andika');
+  backgroundColorPickerText.position(menu.x + 53, canvasY + 43);
 
   woodColorPicker = createColorPicker(localStorage['wood'] || '#000000');
   woodColorPicker.position(menu.x, canvasY + 80);
-  woodText = createP('Wood');
-  woodText.style('font-size', '12px');
-  woodText.style('font-family', 'Andika');
-  woodText.position(menu.x + 53, canvasY + 84);
+  woodColorPickerText = createP('Wood');
+  woodColorPickerText.style('font-size', '12px');
+  woodColorPickerText.style('font-family', 'Andika');
+  woodColorPickerText.position(menu.x + 53, canvasY + 84);
 
   leafColorPicker = createColorPicker(localStorage['leaf'] || '#888888');
   leafColorPicker.position(menu.x, canvasY + 122);
-  leafText = createP('Leaf');
-  leafText.style('font-size', '12px');
-  leafText.style('font-family', 'Andika');
-  leafText.position(menu.x + 53, canvasY + 125);
+  leafColorPickerText = createP('Leaf');
+  leafColorPickerText.style('font-size', '12px');
+  leafColorPickerText.style('font-family', 'Andika');
+  leafColorPickerText.position(menu.x + 53, canvasY + 125);
 
   // create slider for branch length
   branchLengthSlider = createSlider(20, 95, Number(localStorage['branchLength']) || 75, 0);
   branchLengthSlider.position(menu.x, canvasY + 165);
   branchLengthSlider.style('width', '50px');
-  branchLengthText = createP('Branch length');
-  branchLengthText.style('font-size', '12px');
-  branchLengthText.style('font-family', 'Andika');
-  branchLengthText.position(menu.x + 53, canvasY + 162);
+  branchLengthSliderText = createP('Branch length');
+  branchLengthSliderText.style('font-size', '12px');
+  branchLengthSliderText.style('font-family', 'Andika');
+  branchLengthSliderText.position(menu.x + 53, canvasY + 162);
 
   // create slider for branch angle
   branchAngleSlider = createSlider(0, 45, Number(localStorage['branchAngle']) || 22.5, 0);
   branchAngleSlider.position(menu.x, canvasY + 205);
   branchAngleSlider.style('width', '50px');
-  branchAngleText = createP('Branch angle');
-  branchAngleText.style('font-size', '12px');
-  branchAngleText.style('font-family', 'Andika');
-  branchAngleText.position(menu.x + 53, canvasY + 202);
+  branchAngleSliderText = createP('Branch angle');
+  branchAngleSliderText.style('font-size', '12px');
+  branchAngleSliderText.style('font-family', 'Andika');
+  branchAngleSliderText.position(menu.x + 53, canvasY + 202);
 
   // create button to reset parameters de default (without generating a new tree)
   resetParamButton = createButton('Reset parameters');
@@ -101,6 +110,17 @@ function setup() {
   resetParamButtonText.style('font-family', 'Andika');
   resetParamButtonText.style('line-height', 1);
   resetParamButtonText.position(menu.x + 53, canvasY + 242);
+
+  // create button to save image to file
+  saveImageButton = createButton('Save image');
+  saveImageButton.position(menu.x, canvasY + 295);
+  saveImageButton.size(50,23);
+  saveImageButton.mousePressed(saveImage);
+  saveImageButtonText = createP('Save image');
+  saveImageButtonText.style('font-size', '12px');
+  saveImageButtonText.style('font-family', 'Andika');
+  saveImageButtonText.style('line-height', 1);
+  saveImageButtonText.position(menu.x + 53, canvasY + 300);
 
   angleMode(DEGREES);
   noLoop();
@@ -115,21 +135,6 @@ function initSeed() {
 // reload page on user request (to generate a new tree with the parameters saved in cache - see below)
 function reloadPage() {
   location.reload();
-}
-
-// reset the parameters to Default on user request
-function resetParam() {
-  backgroundColorPicker.value('#FFFFFF');
-  woodColorPicker.value('#000000');
-  leafColorPicker.value('#888888');
-  branchLengthSlider.value(75);
-  branchAngleSlider.value(22.5);
-  localStorage['background'] = backgroundColorPicker.value();
-  localStorage['wood'] = woodColorPicker.value(); 
-  localStorage['leaf'] = leafColorPicker.value();
-  localStorage['branchLength'] = branchLengthSlider.value();
-  localStorage['branchAngle'] = branchAngleSlider.value();
-  redraw();
 }
 
 // update colours on user request and store them in the cache
@@ -151,7 +156,27 @@ function updateBranchAngle() {
   redraw();
 }
 
-// capture user input and draw sketch
+// reset the parameters to Default on user request
+function resetParam() {
+  backgroundColorPicker.value('#FFFFFF');
+  woodColorPicker.value('#000000');
+  leafColorPicker.value('#888888');
+  branchLengthSlider.value(75);
+  branchAngleSlider.value(22.5);
+  localStorage['background'] = backgroundColorPicker.value();
+  localStorage['wood'] = woodColorPicker.value(); 
+  localStorage['leaf'] = leafColorPicker.value();
+  localStorage['branchLength'] = branchLengthSlider.value();
+  localStorage['branchAngle'] = branchAngleSlider.value();
+  redraw();
+}
+
+// save canvas to file on user request
+function saveImage() {
+  saveCanvas('myTree', 'png');
+}
+
+// capture user input parameters and draw sketch
 function draw() {
   // set background, add colour pickers to page and update colours per user input
   background(backgroundColorPicker.value());
