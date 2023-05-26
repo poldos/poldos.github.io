@@ -34,7 +34,7 @@ function setup() {
   canvasX = menu.x + 140;
   canvasY = menu.y + menu.height + 10;
   canvasWidth = menu.width - 140;
-  canvasHeight = windowHeight - canvasY - 10;
+  canvasHeight = min(windowHeight - canvasY - 10, 600);
   canvasFrame = createCanvas(canvasWidth, canvasHeight);
   canvasFrame.position(canvasX, canvasY);
 
