@@ -105,6 +105,10 @@ function resetParam() {
   woodColorPicker.value('#000000');
   leafColorPicker.value('#888888');
   branchAngleSlider.value(20);
+  localStorage['background'] = backgroundColorPicker.value();
+  localStorage['wood'] = woodColorPicker.value(); 
+  localStorage['leaf'] = leafColorPicker.value();
+  localStorage['branchAngle'] = branchAngleSlider.value();
   redraw();
 }
 
