@@ -10,15 +10,17 @@ let backgroundText;
 let woodText;
 let leafText;
 
-let buttonText;
+let newTreeButtonText;
 let backgroundColorPicker;
 let woodColorPicker;
 let leafColorPicker;
 let branchAngleSlider;
+let resetParamButtonText;
 
 let rSeed;
 
 let newTreeButton;
+let resetParamButton;
 
 // setup Sketch UI
 function setup() {
@@ -42,9 +44,9 @@ function setup() {
   newTreeButton.position(menuDropdown.x, canvasY);
   newTreeButton.size(50,23);
   newTreeButton.mousePressed(reloadPage);
-  buttonText = createP('New tree');
-  buttonText.style('font-size', '12px');
-  buttonText.position(menuDropdown.x + 53, canvasY + 7);
+  newTreeButtonText = createP('New tree');
+  newTreeButtonText.style('font-size', '12px');
+  newTreeButtonText.position(menuDropdown.x + 53, canvasY + 7);
 
   // create colour pickers (from cache or default if nothing in cache)
   backgroundColorPicker = createColorPicker(localStorage['background'] || '#FFFFFF');
@@ -73,6 +75,15 @@ function setup() {
   branchAngleText.style('font-size', '12px');
   branchAngleText.position(menuDropdown.x + 53, canvasY + 165);
 
+  // create button to reset parameters de default (without generating a new tree)
+  resetParamButton = createButton('Reset parameters');
+  resetParamButton.position(menuDropdown.x, canvasY + 205);
+  resetParamButton.size(50,23);
+  resetParamButton.mousePressed(resetParam);
+  resetParamButtonText = createP('Reset <br> parameters');
+  resetParamButtonText.style('font-size', '12px');
+  resetParamButtonText.position(menuDropdown.x + 53, canvasY + 202);
+
   angleMode(DEGREES);
   noLoop();
   initSeed();
@@ -86,6 +97,15 @@ function initSeed() {
 // reload page on user request (to generate a new tree with the parameters saved in cache - see below)
 function reloadPage() {
   location.reload();
+}
+
+// reset the parameters to Default on user request
+function resetParam() {
+  backgroundColorPicker.value('#FFFFFF');
+  woodColorPicker.value('#000000');
+  leafColorPicker.value('#888888');
+  branchAngleSlider.value(20);
+  redraw();
 }
 
 // update colours on user request and store them in the cache
