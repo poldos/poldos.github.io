@@ -9,10 +9,12 @@ let menuDropdown;
 let backgroundText;
 let woodText;
 let leafText;
+
+let buttonText;
 let backgroundColorPicker;
 let woodColorPicker;
 let leafColorPicker;
-let buttonText;
+let branchAngleSlider;
 
 let rSeed;
 
@@ -21,19 +23,28 @@ let newTreeButton;
 // setup Sketch UI
 function setup() {
   canvasWidth = min(windowWidth, 750);
-  canvasHeight = min(windowHeight-100, 1000);
+  canvasHeight = min(windowHeight-50, 1000);
 
   canvasFrame = createCanvas(canvasWidth, canvasHeight);
 
-  canvasX = (windowWidth - canvasWidth + 30) / 2;
+  canvasX = (windowWidth - canvasWidth + 45) / 2;
   canvasY = (windowHeight - canvasHeight + 25) / 2;
   canvasFrame.position(canvasX, canvasY);
 
   // set white background
   background(255);
 
-  // to align to menu dropdown
+  // to align to menu dropdown, get its coordinates
   menuDropdown = document.getElementById("m1").getBoundingClientRect();
+
+  // create button for page reload / new tree
+  newTreeButton = createButton('New tree');
+  newTreeButton.position(menuDropdown.x, canvasY);
+  newTreeButton.size(50,23);
+  newTreeButton.mousePressed(reloadPage);
+  buttonText = createP('New tree');
+  buttonText.style('font-size', '12px');
+  buttonText.position(menuDropdown.x + 53, canvasY + 7);
 
   // create colour pickers (from cache or default if nothing in cache)
   backgroundColorPicker = createColorPicker(localStorage['background'] || '#FFFFFF');
@@ -54,36 +65,40 @@ function setup() {
   leafText.style('font-size', '12px');
   leafText.position(menuDropdown.x + 53, canvasY + 125);
 
-  // create button for page reload / new tree
-  newTreeButton = createButton('new Tree');
-  //newTreeButton.style('font-size', '12px');
-  newTreeButton.position(menuDropdown.x, canvasY);
-  newTreeButton.size(50,23);
-  newTreeButton.mousePressed(reloadPage);
-  buttonText = createP('new Tree');
-  buttonText.style('font-size', '12px');
-  buttonText.position(menuDropdown.x + 53, canvasY + 7);
+  // create slider for branch right angle
+  branchAngleSlider = createSlider(5, 35, Number(localStorage['branchAngle']) || 20, 0);
+  branchAngleSlider.position(menuDropdown.x, canvasY + 165);
+  branchAngleSlider.style('width', '50px');
+  branchAngleText = createP('Branch angle');
+  branchAngleText.style('font-size', '12px');
+  branchAngleText.position(menuDropdown.x + 53, canvasY + 165);
 
   angleMode(DEGREES);
   noLoop();
   initSeed();
 }
 
-// initialise seed to use until next window reload
+// initialise seed to use until next window reload (to retain the same tree as long as the user does not generate a new one)
 function initSeed() {
   rSeed = random(1, 100);
 }
 
-// reload page on user request
+// reload page on user request (to generate a new tree with the parameters saved in cache - see below)
 function reloadPage() {
   location.reload();
 }
 
-// update colours on user request
+// update colours on user request and store them in the cache
 function updateColors() {
   localStorage['background'] = backgroundColorPicker.value();
   localStorage['wood'] = woodColorPicker.value(); 
   localStorage['leaf'] = leafColorPicker.value();
+  redraw();
+}
+
+// update branch angle on user request and store it in the cache
+function updateAngles() {
+  localStorage['branchAngle'] = branchAngleSlider.value();
   redraw();
 }
 
@@ -94,19 +109,15 @@ function draw() {
   noStroke();
   fill(0);
   
-  //textStyle(BOLD);
-  //text("Background", menuDropdown.x, menuDropdown.y + menuDropdown.height + 10);
   backgroundColorPicker.input(updateColors);
-  //text("Wood", 250, menuDropdown.y + menuDropdown.height + 10);
   woodColorPicker.input(updateColors);
-  //text("Leaves", 450, menuDropdown.y + menuDropdown.height + 10);
   leafColorPicker.input(updateColors);
-  //text("new Tree", 650, menuDropdown.y + menuDropdown.height + 10);
+  branchAngleSlider.input(updateAngles);
 
   // start drawing
   randomSeed(rSeed); // same random seed for each redraw
   translate(canvasWidth/2, canvasHeight/2 + 250);
-  branch(100);
+  branch(90);
 }
 
 // setBackgroundColor()
@@ -119,12 +130,12 @@ function branch(len) {
     // branches
     
     strokeWeight(map(len, 10, 100, 1, 15));
-    stroke(woodColorPicker.value());//brown branches
+    stroke(woodColorPicker.value());
     line(0, 0, 0, -len);
     translate(0, -len);
-    rotate(random(-20, -30));
+    rotate(random(-branchAngleSlider.value() - 5, -branchAngleSlider.value() + 5));
     branch(random(0.7, 0.9)*len);
-    rotate(random(50,60));
+    rotate(random(2* branchAngleSlider.value() - 5, 2 * branchAngleSlider.value() + 5));
     branch(random(0.7, 0.9)*len);
   } else {
     // leaves
@@ -132,7 +143,7 @@ function branch(len) {
     let g = 2 + random(-20, 20);
     let b = 170 + random(-20, 20);
 
-    fill(leafColorPicker.value());//coloured leaves
+    fill(leafColorPicker.value());
     noStroke();
 
     // generate leaves
