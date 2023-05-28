@@ -24,6 +24,8 @@ let rayBool = 0;
 let rayScarcity = 1; // the higher the number, the lower the density of the rays (and the higher the scarcity)
 let rayHitPrecision = 20; // the higher the number, the easier it is to hit
 
+let newGameButton;
+
 // CLASSES
 
 class SpaceInvader {
@@ -142,6 +144,15 @@ function setup() {
   shootSlider.position(canvasX + 50, height);//- 35);
   shootSlider.size(width - 100);
   shootSlider.input(shootRay);
+
+  // create new game button
+    // create button for page reload / new tree
+    newGameButton = createButton('New Game');
+    newGameButton.position(canvasX + width/2 - 100, canvasY + height - 25);
+    newGameButton.size(200,25);
+    newGameButton.style('font-family', 'Andika');
+    newGameButton.style('font-size', '12px');
+    newGameButton.mousePressed(newGame);
 }
 // FUNCTIONS
 // shoot a ray when player moves shootSlider - for the time being, the bullets travel upwards (angle = -90)
@@ -150,6 +161,10 @@ function shootRay() {
     laserRays.push(new LaserRay(shootSlider.value(), height - 50, rayLength, -90, 5, random(255), random(255), random(255)));
   }
   rayBool++;
+}
+// new Game
+function newGame() {
+  location.reload();
 }
 // DRAW
 function draw() {
