@@ -11,11 +11,12 @@ let imgs = [];
 let imageNu;
 
 let spaceInvaders = [];
-let spaceInvaderRadius = 40;
+let spaceInvaderRadius = 60;//40;
 let spaceInvaderRowHeight = 40;
-let spaceInvaderColSpacing = 80;
-let spaceInvaderRows = 6;
+let spaceInvaderColSpacing = 120;//80;
+let spaceInvaderRows = 5;
 let spaceInvaderSpeed = 20;
+let spaceInvaderTickRate = 10;
 
 let laserRays = [];
 let rayLength = 10;
@@ -40,17 +41,21 @@ class SpaceInvader {
     this.r = r;
     this.g = g;
     this.b = b;
+    this.tick = 0;
   }
   show() {
-    stroke(this.r, this.g, this.b);
-    fill(this.r, this.g, this.b);
-    circle(this.x, this.y, this.radius);
-    this.img.resize(40,0);
+    //stroke(this.r, this.g, this.b);
+    //fill(this.r, this.g, this.b);
+    //circle(this.x, this.y, this.radius);
+    this.img.resize(spaceInvaderRadius,0);
     image(this.img, this.x - (this.radius / 2), this.y - (this.radius / 2));
   }
   move() {
-    this.x += this.xSpeed;
-    this.y += this.ySpeed;
+    if (this.tick % spaceInvaderTickRate == 0) {
+      this.x += this.xSpeed * spaceInvaderTickRate;
+      this.y += this.ySpeed * spaceInvaderTickRate;
+      this.ySpeed += 0.01;
+    }
   }
   updateHealth() {
     if (this.hits != 0 && this.hits % 5 == 0) {
@@ -101,7 +106,7 @@ class LaserRay {
 // PRELOAD
 function preload() {
   for (let i = 0; i < spaceInvaderRows; i++) {
-    imgs.push(loadImage(`./assets/img0.png`));
+    imgs.push(loadImage(`./assets/img${i}.png`));
   }
   imageNu = loadImage(`./assets/nu.png`);
 }
@@ -134,7 +139,7 @@ function setup() {
   }
   // create player's shooting slider
   shootSlider = createSlider(50, width - 50, width / 2, 0);
-  shootSlider.position(canvasX + 50, height - 35);
+  shootSlider.position(canvasX + 50, height);//- 35);
   shootSlider.size(width - 100);
   shootSlider.input(shootRay);
 }
@@ -149,14 +154,8 @@ function shootRay() {
 // DRAW
 function draw() {
   background(0);
-  /*
-    for (let img in images) {
-      img.resize(150,0);
-      image(img, 200, 50);
-    }
-*/
   imageNu.resize(50,0);
-  image(imageNu, shootSlider.value() - 23, height - 60);
+  image(imageNu, shootSlider.value() - 23, height - 90);//- 60);
   // show spaceInvaders
   if (spaceInvaders.length == 0) {
     noLoop();
@@ -170,6 +169,7 @@ function draw() {
   } else {
     for (let i = 0; i < spaceInvaders.length; i++) {
       spaceInvaders[i].show();
+      spaceInvaders[i].tick++;
       spaceInvaders[i].move();
       if (spaceInvaders[i].y > height - 60 - spaceInvaderRadius) {
         noLoop();
