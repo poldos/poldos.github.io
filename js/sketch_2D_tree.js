@@ -1,4 +1,4 @@
-// Global variables
+// GLOBAL VARIABLES
 let canvasFrame;
 let canvasWidth;
 let canvasHeight;
@@ -35,7 +35,7 @@ let saveImageButtonText;
 
 let rSeed;
 
-// setup Sketch & UI
+// SETUP
 function setup() {
 
   // to align legend and canvas to horizontal menu, get its coordinates
@@ -138,6 +138,7 @@ function setup() {
   initSeed();
 }
 
+// FUNCTIONS
 // initialise seed to use until next window reload (to retain the same tree as long as the user does not generate a new one)
 function initSeed() {
   rSeed = random(1, 100);
@@ -203,6 +204,7 @@ function hexToRgb(hex) {
   return ([r, g, b]);
 }
 
+// DRAW
 // capture user input parameters and draw sketch
 function draw() {
   // set background, add colour pickers to page and update colours per user input
