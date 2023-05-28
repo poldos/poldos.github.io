@@ -11,13 +11,17 @@ let images = [];
 let imageNu;
 
 let spaceInvaders = [];
-let spaceInvaderRadius = 30;
-let spaceInvaderRowHeight = 30;
+let spaceInvaderRadius = 40;
+let spaceInvaderRowHeight = 40;
+let spaceInvaderColSpacing = 80;
+let spaceInvaderRows = 6;
+let spaceInvaderSpeed = 20;
 
 let laserRays = [];
 let rayLength = 10;
 let rayBool = 0;
-let rayScarcity = 10; // the higher the number, the lower the density of the rays (and the higher the scarcity)
+let rayScarcity = 1; // the higher the number, the lower the density of the rays (and the higher the scarcity)
+let rayHitPrecision = 20; // the higher the number, the easier it is to hit
 
 // CLASSES
 
@@ -26,10 +30,10 @@ class SpaceInvader {
     //this.image = image;
     this.x = x;
     this.y = y;
-    this. radius = radius;
-    this. angle = angle;
-    this.xSpeed = speed * cos(angle);
-    this.ySpeed = speed * sin(angle);
+    this.radius = radius;
+    this.angle = angle;
+    this.xSpeed = 0;//(speed * cos(angle))/100;
+    this.ySpeed = speed / 100; //(speed * sin(angle))/100;
     this.shotInterval = shotInterval; // number of frames btw shots
     this.hits = hits; // after 5 hits, 
     this.health = health; // health goes down 1
@@ -52,7 +56,6 @@ class SpaceInvader {
     }
   }
 }
-
 class LaserRay {
   constructor(x, y, length, angle, speed, r, g, b) {
     this.x = x;
@@ -64,7 +67,7 @@ class LaserRay {
     this.b = b;
     this.xSpeed = speed * cos(angle);
     this.ySpeed = speed * sin(angle);
-    this.hitBool = false;
+    this.killBool = false;
   }
   show() {
     stroke(this.r, this.g, this.b);
@@ -77,19 +80,22 @@ class LaserRay {
   }
   hitSpaceInvader() {
     for (let i = 0; i < spaceInvaders.length; i++) {
-      if (Math.abs(this.x - spaceInvaders[i].x) < 5  && Math.abs(this.y - spaceInvaders[i].y) < 5) {
+      if (Math.abs(this.x - spaceInvaders[i].x) < rayHitPrecision  && Math.abs(this.y - spaceInvaders[i].y) < rayHitPrecision) {
+
         noStroke();
         fill(this.r, this.g, this.b);
         circle(this.x, this.y, this.radius * 3);
+
         spaceInvaders[i].hits += 1;
-        console.log(spaceInvaders[i].hits);
-        this.hitBool = true;
+        spaceInvaders[i].updateHealth();
+        if (spaceInvaders[i].health == 0) {
+          spaceInvaders.splice(i, 1);
+          this.killBool = true;
+        }
       }
     }
   }
 }
-
-
 // PRELOAD
 function preload() {
 /*  for (let i = 0; i < 5; i++) {
@@ -97,15 +103,12 @@ function preload() {
   }*/
   imageNu = loadImage(`./assets/nu.png`);
 }
-
 // SETUP
 function setup() {
   // use degrees as angle unit
   angleMode(DEGREES);
-    
   // to align legend and canvas to horizontal menu, get its coordinates
   menu = document.getElementById("m1").getBoundingClientRect();
-    
   // create canvas
   canvasX = menu.x;// + 140;
   canvasY = menu.y + menu.height + 10;
@@ -113,36 +116,26 @@ function setup() {
   canvasHeight = min(windowHeight - canvasY - 10, 600);
   canvasFrame = createCanvas(canvasWidth, canvasHeight);
   canvasFrame.position(canvasX, canvasY);
-  
   // set white background
   background(0);
-
   // for each of 5 types of spaceInvaders, create a row
   let y = spaceInvaderRowHeight;
-  for (let i = 0; i < 5; i++) {
-    //console.log("row number : " + i);
-    i % 2 == 0 ? xStart = 50 : xStart = 50 + (2 * spaceInvaderRadius);
-    //console.log("xStart : " + xStart);
+  for (let i = 0; i < spaceInvaderRows; i++) {
+    i % 2 == 0 ? xStart = spaceInvaderRadius : xStart = spaceInvaderColSpacing;
     let spaceInvaderR = random(255);
     let spaceInvaderG = random(255);
     let spaceInvaderB = random(255);
-    for (let x = xStart; x < (width - spaceInvaderRadius); x += (spaceInvaderRadius * 4)) {
-      //console.log("x : " + x); angle, speed, shotInterval, hits, health
-      spaceInvaders.push(new SpaceInvader(x, y, spaceInvaderRadius, 0, 2, 25, 0, 5, spaceInvaderR, spaceInvaderG,spaceInvaderB)); // rajouter image[i] en premier parametre une fois les images telechargees
+    for (let x = xStart; x < (width - spaceInvaderRadius + spaceInvaderColSpacing/2); x += spaceInvaderColSpacing) {
+      spaceInvaders.push(new SpaceInvader(x, y, spaceInvaderRadius, 0, spaceInvaderSpeed, 25, 0, 5, spaceInvaderR, spaceInvaderG,spaceInvaderB)); // rajouter image[i] en premier parametre une fois les images telechargees
     }
     y += spaceInvaderRowHeight;
   }
-  //console.log("space invaders : ", spaceInvaders.length);
-
   // create player's shooting slider
   shootSlider = createSlider(50, width - 50, width / 2, 0);
   shootSlider.position(canvasX + 50, height - 35);
   shootSlider.size(width - 100);
   shootSlider.input(shootRay);
-
-  // noLoop();
 }
-
 // FUNCTIONS
 // shoot a ray when player moves shootSlider - for the time being, the bullets travel upwards (angle = -90)
 function shootRay() {
@@ -151,7 +144,6 @@ function shootRay() {
   }
   rayBool++;
 }
-
 // DRAW
 function draw() {
   background(0);
@@ -162,25 +154,40 @@ function draw() {
     }
 */
   imageNu.resize(50,0);
-  image(imageNu, shootSlider.value() - 25, height - 60);
-
+  image(imageNu, shootSlider.value() - 23, height - 60);
   // show spaceInvaders
-  for (let i = 0; i < spaceInvaders.length; i++) {
-    spaceInvaders[i].show();
-  }
-
-  // shoot laserRays and pop spaceInvader out if hit
-  for (let i = 0; i < laserRays.length; i++) {
-    laserRays[i].show();
-    laserRays[i].move();
-    laserRays[i].hitSpaceInvader();
-  }
-
-  // update spaceInvaders health
-  for (let i = 0; i < spaceInvaders.length; i++) {
-    spaceInvaders[i].updateHealth();
-    if (spaceInvaders[i].health == 0) {
-      spaceInvaders.splice(i, 1);
+  if (spaceInvaders.length == 0) {
+    noLoop();
+    noStroke();
+        fill(255);
+        ellipse(width/2, height/2, 0.8 * width, 0.8 * height/2);
+        fill(255, 0, 0);
+        textAlign(CENTER);
+        textSize(28);
+        text("You have won. 🎉Thanks to you,\n NUPES has destroyed Macron and his suckers !✊\n", width/2, height/2);
+  } else {
+    for (let i = 0; i < spaceInvaders.length; i++) {
+      spaceInvaders[i].show();
+      spaceInvaders[i].move();
+      if (spaceInvaders[i].y > height - 60 - spaceInvaderRadius) {
+        noLoop();
+        noStroke();
+        fill(255);
+        ellipse(width/2, height/2, 0.8 * width, 0.8 * height/2);
+        fill(255, 0, 0);
+        textAlign(CENTER);
+        textSize(28);
+        text("You have lost. \n 😈Macron will rule FOREVER hahahaha !😈\n", width/2, height/2);
+      }
+    }
+    // shoot laserRays, pop spaceInvader out if hit and pop laserRay if out of frame
+    for (let i = 0; i < laserRays.length; i++) {
+      laserRays[i].show();
+      laserRays[i].move();
+      laserRays[i].hitSpaceInvader();
+      if (laserRays[i].killBool == true || laserRays[i].y == 0) {
+        laserRays.splice(i,1);
+      }
     }
   }
 }
