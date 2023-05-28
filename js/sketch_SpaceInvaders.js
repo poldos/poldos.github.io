@@ -7,7 +7,7 @@ let canvasX;
 let canvasY;
 let menu;
 
-let images = [];
+let imgs = [];
 let imageNu;
 
 let spaceInvaders = [];
@@ -26,8 +26,8 @@ let rayHitPrecision = 20; // the higher the number, the easier it is to hit
 // CLASSES
 
 class SpaceInvader {
-  constructor(x, y, radius, angle, speed, shotInterval, hits, health, r, g, b) { // rajouter image en premier parametre une fois les images telechargees 
-    //this.image = image;
+  constructor(img, x, y, radius, angle, speed, shotInterval, hits, health, r, g, b) { // rajouter image en premier parametre une fois les images telechargees 
+    this.img = img;
     this.x = x;
     this.y = y;
     this.radius = radius;
@@ -45,6 +45,8 @@ class SpaceInvader {
     stroke(this.r, this.g, this.b);
     fill(this.r, this.g, this.b);
     circle(this.x, this.y, this.radius);
+    this.img.resize(40,0);
+    image(this.img, this.x - (this.radius / 2), this.y - (this.radius / 2));
   }
   move() {
     this.x += this.xSpeed;
@@ -98,9 +100,9 @@ class LaserRay {
 }
 // PRELOAD
 function preload() {
-/*  for (let i = 0; i < 5; i++) {
-    images.push(loadImage(`./assets/image${i}.jpg`));
-  }*/
+  for (let i = 0; i < spaceInvaderRows; i++) {
+    imgs.push(loadImage(`./assets/img0.png`));
+  }
   imageNu = loadImage(`./assets/nu.png`);
 }
 // SETUP
@@ -126,7 +128,7 @@ function setup() {
     let spaceInvaderG = random(255);
     let spaceInvaderB = random(255);
     for (let x = xStart; x < (width - spaceInvaderRadius + spaceInvaderColSpacing/2); x += spaceInvaderColSpacing) {
-      spaceInvaders.push(new SpaceInvader(x, y, spaceInvaderRadius, 0, spaceInvaderSpeed, 25, 0, 5, spaceInvaderR, spaceInvaderG,spaceInvaderB)); // rajouter image[i] en premier parametre une fois les images telechargees
+      spaceInvaders.push(new SpaceInvader(imgs[i], x, y, spaceInvaderRadius, 0, spaceInvaderSpeed, 25, 0, 5, spaceInvaderR, spaceInvaderG,spaceInvaderB)); // rajouter image[i] en premier parametre une fois les images telechargees
     }
     y += spaceInvaderRowHeight;
   }
