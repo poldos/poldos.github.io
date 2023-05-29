@@ -11,12 +11,13 @@ let imgs = [];
 let imageNu;
 
 let spaceInvaders = [];
-let spaceInvaderRadius = 60;//40;
+let spaceInvaderRadius = 60;
 let spaceInvaderRowHeight = 40;
-let spaceInvaderColSpacing = 120;//80;
-let spaceInvaderRows = 5;
+let spaceInvaderColSpacing = 120;
+let spaceInvaderRows = 6;
 let spaceInvaderSpeed = 20;
-let spaceInvaderTickRate = 10;
+let spaceInvaderTickRate = 10; // move only every tickRate frames
+let spaceInvaderAngle = 5; // head rotation angle
 
 let laserRays = [];
 let rayLength = 10;
@@ -29,33 +30,31 @@ let newGameButton;
 // CLASSES
 
 class SpaceInvader {
-  constructor(img, x, y, radius, angle, speed, shotInterval, hits, health, r, g, b) { // rajouter image en premier parametre une fois les images telechargees 
+  constructor(img, x, y, angle, speed, shotInterval, hits, health) {
     this.img = img;
     this.x = x;
     this.y = y;
-    this.radius = radius;
     this.angle = angle;
-    this.xSpeed = 0;//(speed * cos(angle))/100;
-    this.ySpeed = speed / 100; //(speed * sin(angle))/100;
+    this.xSpeed = 0;
+    this.ySpeed = speed / 100;
     this.shotInterval = shotInterval; // number of frames btw shots
     this.hits = hits; // after 5 hits, 
     this.health = health; // health goes down 1
-    this.r = r;
-    this.g = g;
-    this.b = b;
     this.tick = 0;
   }
   show() {
-    //stroke(this.r, this.g, this.b);
-    //fill(this.r, this.g, this.b);
-    //circle(this.x, this.y, this.radius);
+    push();
+    translate(this.x + spaceInvaderRadius/2, this.y + spaceInvaderRadius/2);
+    rotate(this.angle);
     this.img.resize(spaceInvaderRadius,0);
-    image(this.img, this.x - (this.radius / 2), this.y - (this.radius / 2));
+    image(this.img, -spaceInvaderRadius, -spaceInvaderRadius);
+    pop();
   }
   move() {
     if (this.tick % spaceInvaderTickRate == 0) {
       this.x += this.xSpeed * spaceInvaderTickRate;
       this.y += this.ySpeed * spaceInvaderTickRate;
+      this.angle *= -1;
       this.ySpeed += 0.01;
     }
   }
@@ -90,11 +89,9 @@ class LaserRay {
   hitSpaceInvader() {
     for (let i = 0; i < spaceInvaders.length; i++) {
       if (Math.abs(this.x - spaceInvaders[i].x) < rayHitPrecision  && Math.abs(this.y - spaceInvaders[i].y) < rayHitPrecision) {
-
         noStroke();
         fill(this.r, this.g, this.b);
         circle(this.x, this.y, this.radius * 3);
-
         spaceInvaders[i].hits += 1;
         spaceInvaders[i].updateHealth();
         if (spaceInvaders[i].health == 0) {
@@ -116,47 +113,43 @@ function preload() {
 function setup() {
   // use degrees as angle unit
   angleMode(DEGREES);
-  // to align legend and canvas to horizontal menu, get its coordinates
-  //menu = document.getElementById("m1").getBoundingClientRect();
   // create canvas
-  canvasY = 0;//menu.y + menu.height + 10;
-  canvasWidth = min(960, windowWidth);//menu.width;// - 140;
-  canvasHeight = min(windowHeight - canvasY - 10, 600);
-  canvasX = (windowWidth - canvasWidth) / 2;//menu.x;// + 140;
-
+  canvasWidth = windowWidth - 50;
+  canvasHeight = windowHeight - 50;
+  canvasX = (windowWidth - canvasWidth) / 2;
+  canvasY = 0;
   canvasFrame = createCanvas(canvasWidth, canvasHeight);
   canvasFrame.position(canvasX, canvasY);
   // set white background
   background(0);
   // for each of 5 types of spaceInvaders, create a row
   let y = spaceInvaderRowHeight;
+  let clockMirror = 1;
   for (let i = 0; i < spaceInvaderRows; i++) {
     i % 2 == 0 ? xStart = spaceInvaderRadius : xStart = spaceInvaderColSpacing;
-    let spaceInvaderR = random(255);
-    let spaceInvaderG = random(255);
-    let spaceInvaderB = random(255);
-    for (let x = xStart; x < (width - spaceInvaderRadius + spaceInvaderColSpacing/2); x += spaceInvaderColSpacing) {
-      spaceInvaders.push(new SpaceInvader(imgs[i], x, y, spaceInvaderRadius, 0, spaceInvaderSpeed, 25, 0, 5, spaceInvaderR, spaceInvaderG,spaceInvaderB)); // rajouter image[i] en premier parametre une fois les images telechargees
+    let clockwise = clockMirror;
+    for (let x = xStart; x < (width - spaceInvaderRadius); x += spaceInvaderColSpacing) {
+      spaceInvaders.push(new SpaceInvader(imgs[i], x, y, clockwise * spaceInvaderAngle, spaceInvaderSpeed, 25, 0, 5));
+      clockwise *= -1;
     }
     y += spaceInvaderRowHeight;
+    clockMirror *= -1;
   }
   // create player's shooting slider
   shootSlider = createSlider(50, width - 50, width / 2, 0);
-  shootSlider.position(canvasX + 50, height);//- 35);
+  shootSlider.position(canvasX + 50, height - 20);//- 35);
   shootSlider.size(width - 100);
   shootSlider.input(shootRay);
-
   // create new game button
-    // create button for page reload / new tree
-    newGameButton = createButton('New Game');
-    newGameButton.position(canvasX + width/2 - 100, canvasY + height - 25);
-    newGameButton.size(200,25);
-    newGameButton.style('font-family', 'Andika');
-    newGameButton.style('font-size', '12px');
-    newGameButton.mousePressed(newGame);
+  newGameButton = createButton('New Game');
+  newGameButton.position(canvasX + width/2 - 100, windowHeight - 40);
+  newGameButton.size(200,25);
+  newGameButton.style('font-family', 'Andika');
+  newGameButton.style('font-size', '12px');
+  newGameButton.mousePressed(newGame);
 }
 // FUNCTIONS
-// shoot a ray when player moves shootSlider - for the time being, the bullets travel upwards (angle = -90)
+// shoot a ray when player moves shootSlider
 function shootRay() {
   if (rayBool % rayScarcity == 0) { 
     laserRays.push(new LaserRay(shootSlider.value(), height - 50, rayLength, -90, 5, random(255), random(255), random(255)));
@@ -170,18 +163,19 @@ function newGame() {
 // DRAW
 function draw() {
   background(0);
+  // Nu gun !
   imageNu.resize(50,0);
   image(imageNu, shootSlider.value() - 23, height - 90);//- 60);
   // show spaceInvaders
   if (spaceInvaders.length == 0) {
     noLoop();
     noStroke();
-        fill(255);
-        ellipse(width/2, height/2, 0.8 * width, 0.8 * height/2);
-        fill(255, 0, 0);
-        textAlign(CENTER);
-        textSize(28);
-        text("You have won. 🎉Thanks to you,\n NUPES has destroyed Macron and his suckers !✊\n", width/2, height/2);
+    fill(255);
+    ellipse(width/2, height/2, 0.8 * width, 0.8 * height/2);
+    fill(255, 0, 0);
+    textAlign(CENTER);
+    textSize(28);
+    text("You have won. 🎉Thanks to you,\n NUPES has destroyed Macron and his suckers !✊\n", width/2, height/2);
   } else {
     for (let i = 0; i < spaceInvaders.length; i++) {
       spaceInvaders[i].show();
@@ -198,7 +192,7 @@ function draw() {
         text("You have lost. \n 😈Macron will rule FOREVER hahahaha !😈\n", width/2, height/2);
       }
     }
-    // shoot laserRays, pop spaceInvader out if hit and pop laserRay if out of frame
+    // shoot laserRays, pop spaceInvader out if hit x times and pop laserRay if out of frame
     for (let i = 0; i < laserRays.length; i++) {
       laserRays[i].show();
       laserRays[i].move();
