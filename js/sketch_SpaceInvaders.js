@@ -21,7 +21,7 @@ let spaceInvaderAngle = 5; // head rotation angle
 
 let laserRays = [];
 let rayLength = 10;
-let rayBool = 0;
+let rayBool = 0; // to set the probability that a ray hits a spaceInvader
 let rayScarcity = 1; // the higher the number, the lower the density of the rays (and the higher the scarcity)
 let rayHitPrecision = 20; // the higher the number, the easier it is to hit
 
@@ -42,6 +42,7 @@ class SpaceInvader {
     this.health = health; // health goes down 1
     this.tick = 0;
   }
+  // display image rotated +/- spaceInvaderAngle at each step
   show() {
     push();
     translate(this.x + spaceInvaderRadius/2, this.y + spaceInvaderRadius/2);
@@ -50,6 +51,7 @@ class SpaceInvader {
     image(this.img, -spaceInvaderRadius, -spaceInvaderRadius);
     pop();
   }
+  // move spaceInvader downwards each "tick step" + accelerate
   move() {
     if (this.tick % spaceInvaderTickRate == 0) {
       this.x += this.xSpeed * spaceInvaderTickRate;
@@ -58,6 +60,7 @@ class SpaceInvader {
       this.ySpeed += 0.01;
     }
   }
+  // if hit, reduce health counter
   updateHealth() {
     if (this.hits != 0 && this.hits % 5 == 0) {
       this.health--;
@@ -75,17 +78,19 @@ class LaserRay {
     this.b = b;
     this.xSpeed = speed * cos(angle);
     this.ySpeed = speed * sin(angle);
-    this.killBool = false;
   }
+  // display ray
   show() {
     stroke(this.r, this.g, this.b);
     fill(this.r, this.g, this.b);
     rect(this.x, this.y, (this.length * cos(this.angle)+2), (this.length * sin(this.angle))+2);
   }
+  // move ray upward
   move() {
     this.x += this.xSpeed;
     this.y += this.ySpeed;
   }
+  // if spaceInvader is within distance, hit it !
   hitSpaceInvader() {
     for (let i = 0; i < spaceInvaders.length; i++) {
       if (Math.abs(this.x - spaceInvaders[i].x) < rayHitPrecision  && Math.abs(this.y - spaceInvaders[i].y) < rayHitPrecision) {
@@ -96,7 +101,6 @@ class LaserRay {
         spaceInvaders[i].updateHealth();
         if (spaceInvaders[i].health == 0) {
           spaceInvaders.splice(i, 1);
-          this.killBool = true;
         }
       }
     }
@@ -114,7 +118,7 @@ function setup() {
   // use degrees as angle unit
   angleMode(DEGREES);
   // create canvas
-  canvasWidth = windowWidth - 50;
+  canvasWidth = min(1280,windowWidth - 50);
   canvasHeight = windowHeight - 50;
   canvasX = (windowWidth - canvasWidth) / 2;
   canvasY = 0;
@@ -141,7 +145,7 @@ function setup() {
   shootSlider.size(width - 100);
   shootSlider.input(shootRay);
   // create new game button
-  newGameButton = createButton('New Game');
+  newGameButton = createButton('Rejouer');
   newGameButton.position(canvasX + width/2 - 100, windowHeight - 40);
   newGameButton.size(200,25);
   newGameButton.style('font-family', 'Andika');
@@ -163,33 +167,36 @@ function newGame() {
 // DRAW
 function draw() {
   background(0);
-  // Nu gun !
+  // finish line
+  fill(255);
+  rect(-1, height - 90, width + 2, 2);
+  // Nu "gun"
   imageNu.resize(50,0);
-  image(imageNu, shootSlider.value() - 23, height - 90);//- 60);
+  image(imageNu, shootSlider.value() - 23, height - 80);
   // show spaceInvaders
   if (spaceInvaders.length == 0) {
     noLoop();
     noStroke();
-    fill(255);
+    fill(250);
     ellipse(width/2, height/2, 0.8 * width, 0.8 * height/2);
-    fill(255, 0, 0);
+    fill(179, 55, 154);
     textAlign(CENTER);
     textSize(28);
-    text("You have won. 🎉Thanks to you,\n NUPES has destroyed Macron and his suckers !✊\n", width/2, height/2);
+    text("Victoire ! 🎉Grâce à vous,\n la NUPES a vaincu Macron and ses sbires !✊\n", width/2, height/2);
   } else {
     for (let i = 0; i < spaceInvaders.length; i++) {
       spaceInvaders[i].show();
       spaceInvaders[i].tick++;
       spaceInvaders[i].move();
-      if (spaceInvaders[i].y > height - 60 - spaceInvaderRadius) {
+      if (spaceInvaders[i].y > height - spaceInvaderRadius - 50) {
         noLoop();
         noStroke();
-        fill(255);
+        fill(250);
         ellipse(width/2, height/2, 0.8 * width, 0.8 * height/2);
-        fill(255, 0, 0);
+        fill(117, 8, 118);
         textAlign(CENTER);
         textSize(28);
-        text("You have lost. \n 😈Macron will rule FOREVER hahahaha !😈\n", width/2, height/2);
+        text("Oh nooon !\n ☠️Macron va gouverner pour toujours!☠️\n", width/2, height/2);
       }
     }
     // shoot laserRays, pop spaceInvader out if hit x times and pop laserRay if out of frame
