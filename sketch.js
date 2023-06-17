@@ -399,9 +399,6 @@ function draw() {
       console.log("density before diffuse : " + fluid.density[IX(cx+i, cy+j)]);
     }
   }*/
-
   fluid.step();
-
   fluid.renderD();
-  console.log(frameRate());
 }
