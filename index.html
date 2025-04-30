@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en" style="font-family: Ubuntu, sans-serif;">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Sculpture</title>
+    <script>
+        (function() {
+
+            // JavaScript snippet handling Dark/Light mode switching
+
+            const getStoredTheme = () => localStorage.getItem('theme');
+            const setStoredTheme = theme => localStorage.setItem('theme', theme);
+            const forcedTheme = document.documentElement.getAttribute('data-bss-forced-theme');
+
+            const getPreferredTheme = () => {
+
+                if (forcedTheme) return forcedTheme;
+
+                const storedTheme = getStoredTheme();
+                if (storedTheme) {
+                    return storedTheme;
+                }
+
+                const pageTheme = document.documentElement.getAttribute('data-bs-theme');
+
+                if (pageTheme) {
+                    return pageTheme;
+                }
+
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            const setTheme = theme => {
+                if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-bs-theme', theme);
+                }
+            }
+
+            setTheme(getPreferredTheme());
+
+            const showActiveTheme = (theme, focus = false) => {
+                const themeSwitchers = [].slice.call(document.querySelectorAll('.theme-switcher'));
+
+                if (!themeSwitchers.length) return;
+
+                document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+                    element.classList.remove('active');
+                    element.setAttribute('aria-pressed', 'false');
+                });
+
+                for (const themeSwitcher of themeSwitchers) {
+
+                    const btnToActivate = themeSwitcher.querySelector('[data-bs-theme-value="' + theme + '"]');
+
+                    if (btnToActivate) {
+                        btnToActivate.classList.add('active');
+                        btnToActivate.setAttribute('aria-pressed', 'true');
+                    }
+                }
+            }
+
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                const storedTheme = getStoredTheme();
+                if (storedTheme !== 'light' && storedTheme !== 'dark') {
+                    setTheme(getPreferredTheme());
+                }
+            });
+
+            window.addEventListener('DOMContentLoaded', () => {
+                showActiveTheme(getPreferredTheme());
+
+                document.querySelectorAll('[data-bs-theme-value]')
+                    .forEach(toggle => {
+                        toggle.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const theme = toggle.getAttribute('data-bs-theme-value');
+                            setStoredTheme(theme);
+                            setTheme(theme);
+                            showActiveTheme(theme);
+                        })
+                    })
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;500;600;700&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu&amp;display=swap">
+</head>
+
+<body style="font-family: Ubuntu, sans-serif;">
+    <div class="container my-5 mt-4">
+        <div class="row row-cols-2 justify-content-between">
+            <div class="col-7" style="align-content: space-evenly;">
+                <h1 style="width: 188.6px;">SCULPTURES</h1>
+            </div>
+            <div class="col-3 text-end d-md-flex justify-content-md-end">
+                <div class="theme-switcher dropdown d-flex d-md-flex justify-content-md-start px-5 mx-0 ps-0" style="width: 80px;"><button class="btn btn-link dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown" type="button" style="color: var(--bs-body-color);"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-sun-fill mb-1">
+                            <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"></path>
+                        </svg></button>
+                    <div class="dropdown-menu"><a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="light"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-sun-fill opacity-50 me-2">
+                                <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"></path>
+                            </svg>Light</a><a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="dark"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-moon-stars-fill opacity-50 me-2">
+                                <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278"></path>
+                                <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"></path>
+                            </svg>Dark</a><a class="dropdown-item d-flex align-items-center" href="#" data-bs-theme-value="auto"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-circle-half opacity-50 me-2">
+                                <path d="M8 15A7 7 0 1 0 8 1zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16"></path>
+                            </svg>Auto</a></div>
+                </div>
+            </div>
+        </div>
+        <div data-bss-type="blog-loop" data-bss-perpage="6" data-bss-page-param="page">
+            <div class="row gy-4 row-cols-1 row-cols-md-2 row-cols-lg-3" data-bss-type="blog-loop-base">
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item">
+                    <div class="card"><a href="blog/Amandla.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Amandla.png"></a>
+                        <div class="card-body"><a href="blog/Amandla.html">
+                                <h4 class="text-body">Amandla</h4>
+                            </a>
+                            <p class="card-text">2019 - Albâtre</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item">
+                    <div class="card"><a href="blog/Cléopâtre.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Cleopatre.png"></a>
+                        <div class="card-body"><a href="blog/Cléopâtre.html">
+                                <h4 class="text-body">Cléopâtre</h4>
+                            </a>
+                            <p class="card-text">2021 - Serpentine</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item">
+                    <div class="card"><a href="blog/DancingBear.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/DancingBear.png"></a>
+                        <div class="card-body"><a href="blog/DancingBear.html">
+                                <h4 class="text-body">Dancing Bear</h4>
+                            </a>
+                            <p class="card-text">2020 - Calcaire</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item">
+                    <div class="card"><a href="blog/Éléphant.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Elephant.png"></a>
+                        <div class="card-body"><a href="blog/Éléphant.html">
+                                <h4 class="text-body">Elephant</h4>
+                            </a>
+                            <p class="card-text">2021 - Serpentine</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item">
+                    <div class="card"><a href="blog/Enlacées.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Enlacees.jpeg"></a>
+                        <div class="card-body"><a href="blog/Enlacées.html">
+                                <h4 class="text-body">Enlacé.es</h4>
+                            </a>
+                            <p class="card-text">2016-2018 - Calcaire</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item">
+                    <div class="card"><a href="blog/Harmonie.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Harmonie.png"></a>
+                        <div class="card-body"><a href="blog/Harmonie.html">
+                                <h4 class="text-body">Harmonie</h4>
+                            </a>
+                            <p class="card-text">2019 - Albâtre</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/HarmonieAussi.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/HarmonieAussi.png"></a>
+                        <div class="card-body"><a href="blog/HarmonieAussi.html">
+                                <h4 class="text-body">Harmonie aussi</h4>
+                            </a>
+                            <p class="card-text">2020 - Albâtre</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/Infinity.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Infinity.png"></a>
+                        <div class="card-body"><a href="blog/Infinity.html">
+                                <h4 class="text-body">Infinity</h4>
+                            </a>
+                            <p class="card-text">2018 - Albâtre</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/Jojo.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Jojo.png"></a>
+                        <div class="card-body"><a href="blog/Jojo.html">
+                                <h4 class="text-body">Jojo le gilet jaune</h4>
+                            </a>
+                            <p class="card-text">2020 - Calcaire &amp; Posca</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/Mannetje.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Mannetje.png"></a>
+                        <div class="card-body"><a href="blog/Mannetje.html">
+                                <h4 class="text-body">Mannetje</h4>
+                            </a>
+                            <p class="card-text">2019 - Calcaire</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/Père&amp;Fils.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Pere&Fils.png"></a>
+                        <div class="card-body"><a href="blog/Père&amp;Fils.html">
+                                <h4 class="text-body">Père &amp; Fils</h4>
+                            </a>
+                            <p class="card-text">2020 - Albâtre</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/Pingouins.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Pingouins.png"></a>
+                        <div class="card-body"><a href="blog/Pingouins.html">
+                                <h4 class="text-body">Pingouins</h4>
+                            </a>
+                            <p class="card-text">2020 - Albâtre</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/WalkingBear.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/WalkingBear.png"></a>
+                        <div class="card-body"><a href="blog/WalkingBear.html">
+                                <h4 class="text-body">Walking Bear</h4>
+                            </a>
+                            <p class="card-text">2020 - Serpentine</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col offset-xxl-0" data-bss-type="blog-loop-item" style="display: none !important;">
+                    <div class="card"><a href="blog/YaUnOs.html"><img class="card-img-top pb-0 mb-0 pt-0 mt-0" src="assets/img/Os.png"></a>
+                        <div class="card-body"><a href="blog/YaUnOs.html">
+                                <h4 class="text-body">Y a un os !</h4>
+                            </a>
+                            <p class="card-text">2015 - Stéatite ("pierre à savon")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="d-flex justify-content-center mt-3" data-bss-type="blog-loop-pagination">
+                <ul class="pagination">
+                    <li class="page-item disabled" data-type="prev" data-page="1"><a class="page-link" aria-label="Previous" href="#"><span aria-hidden="true">«</span></a></li>
+                    <li class="page-item active" data-type="regular" data-page="1"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item" data-type="regular" data-page="2"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item" data-type="regular" data-page="3"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item" data-type="next" data-page="2"><a class="page-link" aria-label="Next" href="#"><span aria-hidden="true">»</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bs-init.js"></script>
+</body>
+
+</html>
